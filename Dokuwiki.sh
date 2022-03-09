@@ -18,7 +18,7 @@ fi
 
 # Apache installation.
 apache() {
-    echo -e "\e[1;3;5mDistribution: ${DISTRO}\e[m"
+    echo -e "\e[1;3mDistribution: ${DISTRO}\e[m"
     echo -e "\e[1;3mInstalling Apache\e[m"
     sudo apt update
     sudo apt install apache2 apache2-{doc,utils} software-properties-common vim -qy
