@@ -57,7 +57,7 @@ website() {
     echo -e "\e[1;3mCreating virtualhost\e[m"
     tee /etc/apache2/sites-available/dokuwiki.conf << STOP
 <VirtualHost *:80>
-        ServerName wiki.locstat.co.za
+        ServerName wiki.mycompany.com
         DocumentRoot /var/www/html/dokuwiki
 
         <Directory ~ "/var/www/html/dokuwiki/(bin/|conf/|data/|inc/)">
