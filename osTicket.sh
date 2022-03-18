@@ -9,7 +9,6 @@
 # Declaring variables.
 DISTRO=$(lsb_release -ds)
 USERID=$(id -u)
-IPADDR=192.168.33.90
 
 # Sanity checking.
 if [[ "${USERID}" -ne "0" ]]; then
@@ -54,8 +53,8 @@ config() {
 <VirtualHost *:80>
      ServerAdmin levon@locstat.co.za
      DocumentRoot /var/www/osTicket/upload
-     ServerName ticket.locstat.co.za
-     ServerAlias www.locstat.co.za
+     ServerName ticket.mycompany.com
+     ServerAlias www.mycompany.com
      <Directory /var/www/osTicket/>
           Options FollowSymlinks
           AllowOverride All
@@ -111,7 +110,7 @@ service() {
     a2dissite 000-default.conf
     a2ensite osticket.conf
     systemctl restart apache2
-    echo -e "\e[33;1;3;5mFinished, configure webUI - http://${IPADDR}/setup/install.php\e[m"
+    echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
     exit
 }
 
@@ -127,15 +126,3 @@ if [[ -f /etc/lsb-release ]]; then
     firewall
     service
 fi
-
-# Post-installation step: 
-# rm -rf /var/www/osTicket/upload/setup/
-# Fasting:
-# no food, only water.
-# no smoking.
-# no TV or internet for a period of time.
-# when you fast, do so with God in mind for His pleasure (deny yourself physically to grow spiritually).
-# God has asked us to fast as Christians (but it works in concert with prayer).
-# when you fast you choose the soul over your body (asking God to nourish your soul).
-# 0637164875 - Charlette
-# spend time and effort on being the right person instead of finding the right person.
