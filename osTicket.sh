@@ -51,7 +51,7 @@ config() {
     echo -e "\e[32;1;3mConfiguring Apache\e[m"
     tee /etc/apache2/sites-available/osticket.conf << STOP
 <VirtualHost *:80>
-     ServerAdmin levon@locstat.co.za
+     ServerAdmin sk3ma87@gmail.com
      DocumentRoot /var/www/osTicket/upload
      ServerName ticket.mycompany.com
      ServerAlias www.mycompany.com
