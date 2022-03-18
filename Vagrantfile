@@ -62,7 +62,7 @@ STOP
     STOP
         SHELL
         # Script to bootstrap.
-    o.vm.provision "shell", path: "osTicket.sh", privileged: true
+      o.vm.provision "shell", path: "osTicket.sh", privileged: true
       end
   # Customizing Ubuntu server.
     config.vm.define "portainer" do |p|
