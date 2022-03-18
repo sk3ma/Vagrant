@@ -38,9 +38,9 @@ STOP
         # Preparing Dokuwiki installation.
         d.vm.provision "shell", inline: <<-SHELL
          tee /etc/hosts << STOP
-    127.0.0.1    	localhost
-    127.0.1.1    	dokuwiki
-    STOP
+127.0.0.1    	localhost
+127.0.1.1    	dokuwiki
+STOP
         SHELL
         # Script to bootstrap.
         d.vm.provision "shell", path: "Dokuwiki.sh", privileged: true
@@ -57,9 +57,9 @@ STOP
         # Preparing osTicket installation.
         o.vm.provision "shell", inline: <<-SHELL
           tee /etc/hosts << STOP
-    127.0.0.1    	localhost
-    127.0.1.1    	osticket
-    STOP
+127.0.0.1    	localhost
+127.0.1.1    	osticket
+STOP
         SHELL
         # Script to bootstrap.
       o.vm.provision "shell", path: "osTicket.sh", privileged: true
@@ -75,9 +75,9 @@ STOP
       # Preparing Portainer installation.
       p.vm.provision "shell", inline: <<-SHELL
         tee /etc/hosts << STOP
-  127.0.0.1    	localhost
-  127.0.1.1    	portainer
-  STOP
+127.0.0.1    	localhost
+127.0.1.1    	portainer
+STOP
       SHELL
       # Script to bootstrap.
       p.vm.provision "shell", path: "Portainer.sh", privileged: true
