@@ -79,6 +79,23 @@ STOP
     a2ensite dokuwiki.conf
 }
 
+# Sample page.
+page() {
+    echo -e "\e[32;1;3mCreating page\e[m"
+    tee /var/www/html/dokuwiki/data/pages/start.txt << STOP
+====== Landing page ======
+----
+> **Usage**: To ''retrieve wiki pages'' click on ''Search'' and ''type'' something.
+
+>> ''Dokuwiki'' wiki page location - ''/var/www/html/dokuwiki/data/pages''.
+
+----
+[[http://mycompany.com|{{ wiki:dokuwiki-128.png |My Company}}]]
+
+----
+STOP
+}
+
 # Certbot installation.
 cert() {
     echo -e "\e[32;1;3mInstalling Certbot\e[m"
@@ -96,5 +113,6 @@ if [[ -f /etc/lsb-release ]]; then
     firewall
     wiki
     website
+    page
     cert
 fi
