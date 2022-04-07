@@ -86,7 +86,6 @@ page() {
 ====== Landing page ======
 ----
 > **Usage**: To ''retrieve wiki pages'' click on ''Search'' and ''type'' something.
-
 >> ''Dokuwiki'' wiki page location - ''/var/www/html/dokuwiki/data/pages''.
 
 ----
