@@ -34,13 +34,14 @@ php() {
     echo -e "\e[32;1;3mInstalling PHP\e[m"
     apt install libapache2-mod-php7.4 php7.4 php7.4-{cli,dev,common,gd,mbstring,zip} -qy
     echo "<?php phpinfo(); ?>" > info.php
+    sed -ie 's/;extension=imap/extension=imap/g' /etc/php/7.4/cli/php.ini
 }
 
 # MySQL installation.
 mysql() {
     echo -e "\e[32;1;3mInstalling MySQL\e[m"
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password password ivyLab'
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password ivyLab'
+    debconf-set-selections <<< 'mysql-server mysql-server/root_password password J0TXkRlg!'
+    debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password J0TXkRlg!'
     apt install mysql-server-8.0 mysql-client-8.0 php7.4-mysql php7.4-imap -qy
     systemctl start mysql
     systemctl enable mysql
