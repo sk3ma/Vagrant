@@ -41,7 +41,7 @@ mysql() {
     echo -e "\e[32;1;3mInstalling MySQL\e[m"
     debconf-set-selections <<< 'mysql-server mysql-server/root_password password ivyLab'
     debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password ivyLab'
-    apt install mysql-server-8.0 mysql-client-8.0 php7.4-mysql -qy
+    apt install mysql-server-8.0 mysql-client-8.0 php7.4-mysql php7.4-imap -qy
     systemctl start mysql
     systemctl enable mysql
 }
