@@ -28,6 +28,7 @@ install() {
     echo -e "\e[32;1;3mInstalling Docker\e[m"
     apt install docker-ce docker-ce-cli containerd.io -qy
     usermod -aG docker ${USER}
+    chmod a=rw /var/run/docker.sock
 }
 
 # Docker configuration.
