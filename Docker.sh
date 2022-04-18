@@ -52,7 +52,6 @@ service() {
 script() {    
     echo -e "\e[33;1;3;5mExecuting Grafana script...\e[m"
     source /vagrant/Grafana.sh
-#    exit
 }
       
 # Calling functions.
