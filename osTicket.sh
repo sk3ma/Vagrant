@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 
-#################################################################################
-# The purpose of the script is to automate a LAMP installation on Ubuntu.       #      
-# The script installs LAMP, osTicket, and creates a database and virtualhost.   #
-# Issue 'mysql -u root -pivyLab > /var/www/osticket.sql | pv' to load database. #
-#################################################################################
+###############################################################################
+# The purpose of the script is to automate a LAMP installation on Ubuntu.     #      
+# The script installs LAMP, osTicket, and creates a database and virtualhost. #
+###############################################################################
 
 # Declaring variables.
 DISTRO=$(lsb_release -ds)
 USERID=$(id -u)
+DIRE='/var/www/osTicket/upload/setup/'
 
 # Sanity checking.
 if [[ "${USERID}" -ne "0" ]]; then
@@ -37,14 +37,18 @@ php() {
     sed -ie 's/;extension=imap/extension=imap/g' /etc/php/7.4/cli/php.ini
 }
 
-# MySQL installation.
-mysql() {
-    echo -e "\e[32;1;3mInstalling MySQL\e[m"
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password password J0TXkRlg!'
-    debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password J0TXkRlg!'
-    apt install mysql-server-8.0 mysql-client-8.0 php7.4-mysql php7.4-imap -qy
-    systemctl start mysql
-    systemctl enable mysql
+# MariaDB installation.
+mariadb() {
+    echo -e "\e[32;1;3mInstalling MariaDB\e[m"
+    apt install software-properties-common curl -qy
+    cd /opt
+    curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
+    bash mariadb_repo_setup --mariadb-server-version=10.6
+    apt update
+    apt install mariadb-server-10.6 mariadb-client-10.6 mariadb-common php7.4-mysql php7.4-imap -qy
+    systemctl start mariadb
+    systemctl enable mariadb
+    rm -f mariadb_repo_setup
 }
 
 # Apache configuration.
@@ -52,10 +56,10 @@ config() {
     echo -e "\e[32;1;3mConfiguring Apache\e[m"
     tee /etc/apache2/sites-available/osticket.conf << STOP
 <VirtualHost *:80>
-     ServerAdmin sk3ma87@gmail.com
+     ServerAdmin levon@locstat.co.za
      DocumentRoot /var/www/osTicket/upload
-     ServerName ticket.mycompany.com
-     ServerAlias www.mycompany.com
+     ServerName ticket.locstat.co.za
+     ServerAlias www.locstat.co.za
      <Directory /var/www/osTicket/>
           Options FollowSymlinks
           AllowOverride All
@@ -72,10 +76,9 @@ STOP
 database() {
     echo -e "\e[32;1;3mConfiguring MySQL\e[m"
     tee /var/www/osticket.sql << STOP
-UPDATE mysql.user SET plugin = 'mysql_native_password' WHERE User = 'root';
-CREATE DATABASE osticket_db;
-CREATE USER 'osadmin'@'localhost' IDENTIFIED BY 'P@ssword321';
-GRANT ALL PRIVILEGES ON osticket_db.* TO 'osadmin'@'localhost';
+CREATE DATABASE osticket_db character set utf8 collate utf8_bin;
+CREATE USER 'osadmin'@'%' IDENTIFIED BY 'e3h6IFpp!';
+GRANT ALL PRIVILEGES ON osticket_db.* TO 'osadmin'@'%';
 FLUSH PRIVILEGES;
 STOP
 }
@@ -111,7 +114,14 @@ service() {
     a2dissite 000-default.conf
     a2ensite osticket.conf
     systemctl restart apache2
+}
+    
+# Certbot installation.
+cert() {
+    echo -e "\e[32;1;3mInstalling Certbot\e[m"
+    apt install certbot python3-certbot-apache -qy
     echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
+    echo -e "\e[33;1;3;5mPost configuration: remove ${DIRE} directory.\e[m"
     exit
 }
 
@@ -120,10 +130,11 @@ if [[ -f /etc/lsb-release ]]; then
     echo -e "\e[33;1;3;5mUbuntu detected, proceeding...\e[m"
     apache
     php
-    mysql
+    mariadb
     config
     database
     osticket
     firewall
     service
+    cert
 fi
