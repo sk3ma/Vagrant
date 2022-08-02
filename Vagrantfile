@@ -14,7 +14,7 @@ Vagrant.configure("2") do |config|
     g.vm.box_check_update = false
     g.vm.hostname = "grafana"
     # Defining the network.
-    g.vm.network "private_network", ip: "192.168.33.55"
+    g.vm.network "private_network", ip: "192.168.56.55"
     g.vm.network "forwarded_port", guest: 80, host: 9001
     # Preparing Docker installation.
     g.vm.provision "shell", inline: <<-SHELL
@@ -32,7 +32,7 @@ STOP
         d.vm.box_check_update = false
         d.vm.hostname = "dokuwiki"
         # Defining the network.
-        d.vm.network "private_network", ip: "192.168.33.60"
+        d.vm.network "private_network", ip: "192.168.56.60"
         d.vm.network "forwarded_port", guest: 80, host: 8080
     d.vm.network "forwarded_port", guest: 80, host: 9001
         # Preparing Dokuwiki installation.
@@ -52,7 +52,7 @@ STOP
       config.vm.define "osticket" do |o|
         o.vm.hostname = "osticket"
         # Defining the network.
-        o.vm.network "private_network", ip: "192.168.33.90"
+        o.vm.network "private_network", ip: "192.168.56.90"
         o.vm.network "forwarded_port", guest: 80, host: 8081
         # Preparing osTicket installation.
         o.vm.provision "shell", inline: <<-SHELL
@@ -70,7 +70,7 @@ STOP
       p.vm.box_check_update = false
       p.vm.hostname = "portainer"
       # Defining the network.
-      p.vm.network "private_network", ip: "192.168.33.70"
+      p.vm.network "private_network", ip: "192.168.56.70"
       p.vm.network "forwarded_port", guest: 80, host: 9000
       # Preparing Portainer installation.
       p.vm.provision "shell", inline: <<-SHELL
