@@ -32,9 +32,10 @@ apache() {
 # PHP installation.
 php() {
     echo -e "\e[32;1;3mInstalling PHP\e[m"
-    apt install libapache2-mod-php7.4 php7.4 php7.4-{cli,dev,common,gd,mbstring,zip} -qy
-    echo "<?php phpinfo(); ?>" > info.php
-    sed -ie 's/;extension=imap/extension=imap/g' /etc/php/7.4/cli/php.ini
+    add-apt-repository ppa:ondrej/php -y
+    apt install php8.0 -qy
+    apt install php8.0-{common,imap,apcu,intl,cgi,mbstring,gd,bcmath,xml,zip} -qy
+    echo "<?php phpinfo(); ?>" > /var/www/html/info.php
 }
 
 # MariaDB installation.
@@ -54,12 +55,12 @@ mariadb() {
 # Apache configuration.
 config() {
     echo -e "\e[32;1;3mConfiguring Apache\e[m"
-    tee /etc/apache2/sites-available/osticket.conf << STOP
+    local vhost=$(cat << STOP
 <VirtualHost *:80>
-     ServerAdmin levon@locstat.co.za
+     ServerAdmin sk3ma87@gmail.com
      DocumentRoot /var/www/osTicket/upload
-     ServerName ticket.locstat.co.za
-     ServerAlias www.locstat.co.za
+     ServerName ticket.mycompany.com
+     ServerAlias www.ticket.mycompany.com
      <Directory /var/www/osTicket/>
           Options FollowSymlinks
           AllowOverride All
@@ -70,38 +71,42 @@ config() {
      CustomLog ${APACHE_LOG_DIR}/osticket_access.log combined
 </VirtualHost>
 STOP
+)
+    echo "${vhost}" > /etc/apache2/sites-available/osticket.conf
 }
 
 # Database creation.
 database() {
-    echo -e "\e[32;1;3mConfiguring MySQL\e[m"
-    tee /var/www/osticket.sql << STOP
+    echo -e "\e[32;1;3mConfiguring MariaDB\e[m"
+    local dbase=$(cat << STOP
 CREATE DATABASE osticket_db character set utf8 collate utf8_bin;
 CREATE USER 'osadmin'@'%' IDENTIFIED BY 'e3h6IFpp!';
 GRANT ALL PRIVILEGES ON osticket_db.* TO 'osadmin'@'%';
-FLUSH PRIVILEGES;
 STOP
+)
+    echo "${dbase}" > /var/www/osticket.sql
 }
 
 # osTicket installation.
 osticket() {
     echo -e "\e[32;1;3mDownloading osTicket\e[m"
-    apt install vim unzip pv -qy
+    apt install pv vim unzip -qy
     cd /opt
-    wget --progress=bar:force https://github.com/osTicket/osTicket/releases/download/v1.15.2/osTicket-v1.15.2.zip
-    echo -e "\e[32;1;3mUnpacking files\e[m"   
-    unzip osTicket-v1.15.2.zip -d osTicket
+    wget --progress=bar:force https://github.com/osTicket/osTicket/releases/download/v1.16.3/osTicket-v1.16.3.zip
+    echo -e "\e[32;1;3mUnpacking files\e[m"
+    unzip osTicket-v1.16.3.zip -d osTicket
     mv -v osTicket /var/www/
+    echo -e "\e[32;1;3mConfiguring osTicket\e[m"
     cp -v /var/www/osTicket/upload/include/ost-sampleconfig.php /var/www/osTicket/upload/include/ost-config.php
     chown -vR www-data:www-data /var/www/
     chmod -vR 755 /var/www/osTicket
-    rm -f rm osTicket-v1.15.2.zip
+    rm -f osTicket-v1.16.3.zip
 }
 
 # Firewall exception.
 firewall() {
     echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 80/tcp
+    ufw allow 80,443/tcp
     ufw allow 3306/tcp
     echo "y" | ufw enable
     ufw reload
