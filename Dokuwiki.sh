@@ -19,17 +19,17 @@ fi
 apache() {
     echo -e "\e[96;1;3mDistribution: ${DISTRO}\e[m"
     echo -e "\e[32;1;3mInstalling Apache\e[m"
-    sudo apt update
-    sudo apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} software-properties-common vim -qy
+    apt update
+    apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} software-properties-common vim -qy
     echo "<h1>Apache is operational</h1>" > /var/www/html/index.html
-    sudo systemctl start apache2
-    sudo systemctl enable --now apache2
+    systemctl start apache2
+    systemctl enable --now apache2
 }
 
 # PHP installation.
 php() {
-    echo -e "\e[32;1mInstalling PHP\e[m"
-    sudo apt install libapache2-mod-php7.4 php7.4 php7.4-{cli,dev,common,gd,mbstring,zip} -qy
+    echo -e "\e[32;1;3mInstalling PHP\e[m"
+    apt install libapache2-mod-php7.4 php7.4 php7.4-{cli,curl,common,dev,fpm,gd,mbstring,xml} -qy
     echo "<?php phpinfo(); ?>" > /var/www/html/info.php
 }
 
@@ -44,6 +44,7 @@ firewall() {
 # Downloading Dokuwiki.
 wiki() {
     echo -e "\e[32;1;3mDownloading Dokuwiki\e[m"
+    cd /opt
     mkdir -p /var/www/html/dokuwiki
     wget --progress=bar:force https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
     tar xzf dokuwiki-stable.tgz -C /var/www/html/dokuwiki/ --strip-components=1
@@ -55,7 +56,7 @@ wiki() {
 # Dokuwiki configuration.
 website() {
     echo -e "\e[32;1;3mCreating virtualhost\e[m"
-    tee /etc/apache2/sites-available/dokuwiki.conf << STOP
+    local vhost=$(cat << STOP
 <VirtualHost *:80>
         ServerName wiki.mycompany.com
         DocumentRoot /var/www/html/dokuwiki
@@ -75,6 +76,8 @@ website() {
         CustomLog /var/log/apache2/dokuwiki_access.log combined
 </VirtualHost>
 STOP
+)
+    echo "${vhost}" > /etc/apache2/sites-available/dokuwiki.conf
     a2dissite 000-default.conf
     a2ensite dokuwiki.conf
 }
@@ -83,13 +86,25 @@ STOP
 page() {
     echo -e "\e[32;1;3mCreating page\e[m"
     tee /var/www/html/dokuwiki/data/pages/start.txt << STOP
-====== Landing page ======
 ----
-> **Usage**: To ''retrieve wiki pages'' click on ''Search'' and ''type'' something.
->> ''Dokuwiki'' wiki page location - ''/var/www/html/dokuwiki/data/pages''.
+[[http://www.mycompany.com|{{ ::mycompany-1.png?400 |My Company}}]]
 
-----
-[[http://mycompany.com|{{ wiki:dokuwiki-128.png |My Company}}]]
+====== Greetings citizen ======
+> **''Welcome'' to the ''My Company'' wiki ''landing page''.**
+
+  * **This is a ''private place'' where you can ''store code'' and ''technical documentation'' that is Git ''version controlled''.**
+    * **All ''wiki pages'' are ''stored'' in ''plain text'' files, so there is ''no need'' for a ''database''.**
+    * **''Pages'' are created by ''editing non-existing'' pages, so after the ''id='' portion in the ''web browser'' you would provide a wiki ''page name''.**
+    * **It is recommended ''to duplicate'' your current ''tab'' and simply ''modify'' the URL in the web browser.**
+    * **An ''example'' would be something like ''http://wiki.mycompany.com/doku.php?id=harden-server'' with ''harden-server'' being the ''page name''.**
+    * **For ''security concerns'' Dokuwiki uses ''access control lists'' for ''authentication'' and only ''registered users'' are allowed ''access''.**
+    * **''Dokuwiki'' also makes use of email ''two-factor authentication'' for ''additional security''.**
+    * **To ''search'' wiki pages click on ''Search'' and ''type something'', such as ''zabbix'' for instance.**
+    * **To ''find'' a ''list'' of existing ''wiki pages'' click on ''Sitemap'', and for ''images'' click on ''Media Manager''.**
+    * **To ''remove'' wiki pages simply ''delete'' the ''content'' from the ''wiki page''.**
+    * :!: **ADMIN:** For ''backup purposes'' the Dokuwiki ''working directory'' resides in the ''/var/www/html/dokuwiki/data'' directory.
+
+>> **''Unlock'' the ''value'' in your ''data'' by ''illuminating'' the ''opportunities'' and ''hidden risks'' in your ''digital environment''.**
 
 ----
 STOP
@@ -106,7 +121,7 @@ cert() {
 
 # Calling functions.
 if [[ -f /etc/lsb-release ]]; then
-    echo -e "\e[33;1;3;5mUbuntu detected, proceeding...\e[m"
+    echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
     apache
     php
     firewall
