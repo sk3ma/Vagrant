@@ -1,14 +1,13 @@
 #!/usr/bin/env bash
 
-#############################################################################
-# The purpose of the script is to automate a Docker installation on Ubuntu. #          
-# The script installs Docker, downloads Portainer and creates a container.  # 
-#############################################################################
+############################################################################
+# The purpose of the script is to automate a Docker installation on Ubuntu #
+# The script installs Docker, downloads Portainer and creates a container. #
+############################################################################
 
 # Declaring variables.
 DISTRO=$(lsb_release -ds)
 USERID=$(id -u)
-IPADDR=192.168.33.70
 
 # Sanity checking.
 if [[ ${USERID} -ne "0" ]]; then
@@ -28,6 +27,10 @@ install() {
     echo -e "\e[32;1;3mInstalling Docker\e[m"
     apt install docker-ce docker-ce-cli containerd.io -qy
     usermod -aG docker ${USER}
+    chmod a=rw /var/run/docker.sock
+    curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 }
 
 # Docker configuration.
@@ -36,15 +39,25 @@ config() {
     docker pull docker/whalesay:latest
     docker run docker/whalesay:latest cowsay "Docker is functional."
     echo -e "\e[32;1;3mCreating volume\e[m"
-    mkdir -pv /container
-    docker volume create bindmount
-}
-
-# Enabling service.
-service() {
+    docker volume create container
     echo -e "\e[32;1;3mStarting service\e[m"
     systemctl start docker
     systemctl enable docker
+}
+
+# Portainer server.
+portainer() {
+    echo -e "\e[32;1;3mDownloading Portainer\e[m"
+    docker pull portainer/portainer
+    docker run -d \
+    --name=portainer \
+    -p 9000:9000 \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v container:/data \
+    portainer/portainer \
+    --restart=always
+    docker start portainer
+    docker container ls
 }
 
 # Firewall creation.
@@ -53,28 +66,33 @@ firewall() {
     ufw allow 9000/tcp
     echo "y" | ufw enable
     ufw reload
-}
-
-# Downloading Portainer.
-portainer() {
-    echo -e "\e[32;1;3mDownloading Portainer\e[m"
-    docker pull portainer/portainer-ce:latest
-    docker run -d \
-    -p ${IPADDR}:9000:9000 \
-    --name portainer \
-    --restart=always \
-    -v /var/run/docker.sock:/var/run/docker.sock \
-    -v /container:/data portainer/portainer-ce:latest
-    echo -e "\e[33;1;3;5mPortainer access - http://${IPADDR}:9000\e[m"
+    echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
     exit
 }
-    
+
+## Portainer agent.
+#agent() {
+#    echo -e "\e[32;1;3mDownloading agent\e[m"
+#    docker run -d \
+#    -v /var/run/docker.sock:/var/run/docker.sock \
+#    -v /var/lib/docker/volumes:/var/lib/docker/volumes \
+#    -v /:/host \
+#    -v portainer_agent_data:/data \
+#    --restart=always \
+#    -e EDGE=1 \
+#    -e EDGE_ID=f28a53ea-2fe3-4ddc-b30a-1687d9f12ae4 \
+#    -e EDGE_KEY=aHR0cDovLzE5Mi4xNjguNTYuNzQ6OTAwMHwxOTIuMTY4LjU2Ljc0OjgwMDB8MzU6NjA6Yjk6MTk6MjM6Njg6MjA6ODc6NzE6N2Y6MjM6OGE6NWE6YzM6NTc6YWZ8Mw \
+#    -e EDGE_INSECURE_POLL=1 \
+#    --name=sportainer_edge_agent \
+#    portainer/agent:2.13.1
+#}
+
 # Calling functions.
 if [[ -f /etc/lsb-release ]]; then
-    echo -e "\e[33;1;3;5mUbuntu detected, proceeding...\e[m"
+    echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
     install
     config
-    service
-    firewall
     portainer
+    firewall
+#    agent
 fi
