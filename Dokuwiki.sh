@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-###################################################################
-# This script will automate a Dokuwiki installation on Ubuntu.    #
-# It will install Apache, PHP, Dokuwiki and create a virtualhost. #
-###################################################################
+######################################################################
+# This script will automate a Dokuwiki installation on Ubuntu 20.04. #
+# It will install Apache, PHP, Dokuwiki and creates a virtualhost.   #
+######################################################################
 
 # Declaring variables.
 USERID=$(id -u)
@@ -58,7 +58,7 @@ website() {
     echo -e "\e[32;1;3mCreating virtualhost\e[m"
     local vhost=$(cat << STOP
 <VirtualHost *:80>
-        ServerName wiki.mycompany.com
+        ServerName wiki.locstat.co.za
         DocumentRoot /var/www/html/dokuwiki
 
         <Directory ~ "/var/www/html/dokuwiki/(bin/|conf/|data/|inc/)">
@@ -90,21 +90,17 @@ page() {
 [[http://www.mycompany.com|{{ ::mycompany-1.png?400 |My Company}}]]
 
 ====== Greetings citizen ======
-> **''Welcome'' to the ''My Company'' wiki ''landing page''.**
+>> **''Welcome'' to the ''My Company'' wiki ''landing page''.**
 
   * **This is a ''private place'' where you can ''store code'' and ''technical documentation'' that is Git ''version controlled''.**
     * **All ''wiki pages'' are ''stored'' in ''plain text'' files, so there is ''no need'' for a ''database''.**
     * **''Pages'' are created by ''editing non-existing'' pages, so after the ''id='' portion in the ''web browser'' you would provide a wiki ''page name''.**
-    * **It is recommended ''to duplicate'' your current ''tab'' and simply ''modify'' the URL in the web browser.**
-    * **An ''example'' would be something like ''http://wiki.mycompany.com/doku.php?id=harden-server'' with ''harden-server'' being the ''page name''.**
     * **For ''security concerns'' Dokuwiki uses ''access control lists'' for ''authentication'' and only ''registered users'' are allowed ''access''.**
     * **''Dokuwiki'' also makes use of email ''two-factor authentication'' for ''additional security''.**
     * **To ''search'' wiki pages click on ''Search'' and ''type something'', such as ''zabbix'' for instance.**
     * **To ''find'' a ''list'' of existing ''wiki pages'' click on ''Sitemap'', and for ''images'' click on ''Media Manager''.**
     * **To ''remove'' wiki pages simply ''delete'' the ''content'' from the ''wiki page''.**
     * :!: **ADMIN:** For ''backup purposes'' the Dokuwiki ''working directory'' resides in the ''/var/www/html/dokuwiki/data'' directory.
-
->> **''Unlock'' the ''value'' in your ''data'' by ''illuminating'' the ''opportunities'' and ''hidden risks'' in your ''digital environment''.**
 
 ----
 STOP
