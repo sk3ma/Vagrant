@@ -26,11 +26,11 @@ install() {
     add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu focal stable" -y
     echo -e "\e[32;1;3mInstalling Docker\e[m"
     apt install docker-ce docker-ce-cli containerd.io -qy
-    usermod -aG docker ${USER}
-    chmod a=rw /var/run/docker.sock
+    usermod -aG docker ${USER} && chmod a=rw /var/run/docker.sock
+    echo -e "\e[32;1;3mInstalling Compose\e[m"
     curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    chmod +x /usr/local/bin/docker-compose
     ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
+    chmod +x /usr/local/bin/docker-compose
 }
 
 # Docker configuration.
@@ -41,12 +41,11 @@ config() {
     echo -e "\e[32;1;3mCreating volume\e[m"
     docker volume create container
     echo -e "\e[32;1;3mStarting service\e[m"
-    systemctl start docker
-    systemctl enable docker
+    systemctl start docker && systemctl enable docker
 }
 
 # Portainer server.
-portainer() {
+server() {
     echo -e "\e[32;1;3mDownloading Portainer\e[m"
     docker pull portainer/portainer
     docker run -d \
@@ -70,29 +69,29 @@ firewall() {
     exit
 }
 
-## Portainer agent.
-#agent() {
-#    echo -e "\e[32;1;3mDownloading agent\e[m"
-#    docker run -d \
-#    -v /var/run/docker.sock:/var/run/docker.sock \
-#    -v /var/lib/docker/volumes:/var/lib/docker/volumes \
-#    -v /:/host \
-#    -v container:/data \
-#    --restart=always \
-#    -e EDGE=1 \
-#    -e EDGE_ID=f28a53ea-2fe3-4ddc-b30a-1687d9f12ae4 \
-#    -e EDGE_KEY=aHR0cDovLzE5Mi4xNjguNTYuNzQ6OTAwMHwxOTIuMTY4LjU2Ljc0OjgwMDB8MzU6NjA6Yjk6MTk6MjM6Njg6MjA6ODc6NzE6N2Y6MjM6OGE6NWE6YzM6NTc6YWZ8Mw \
-#    -e EDGE_INSECURE_POLL=1 \
-#    --name=portainer_agent \
-#    portainer/agent:2.13.1
-#}
+# Portainer agent.
+agent() {
+    echo -e "\e[32;1;3mDownloading agent\e[m"
+    docker run -d \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /var/lib/docker/volumes:/var/lib/docker/volumes \
+    -v /:/host \
+    -v container:/data \
+    --restart=always \
+    -e EDGE=1 \
+    -e EDGE_ID=f28a53ea-2fe3-4ddc-b30a-1687d9f12ae4 \
+    -e EDGE_KEY=aHR0cDovLzE5Mi4xNjguNTYuNzQ6OTAwMHwxOTIuMTY4LjU2Ljc0OjgwMDB8MzU6NjA6Yjk6MTk6MjM6Njg6MjA6ODc6NzE6N2Y6MjM6OGE6NWE6YzM6NTc6YWZ8Mw \
+    -e EDGE_INSECURE_POLL=1 \
+    --name=portainer_agent \
+    portainer/agent:2.13.1
+}
 
 # Calling functions.
 if [[ -f /etc/lsb-release ]]; then
     echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
     install
     config
-    portainer
+    server
     firewall
-#    agent
+    agent
 fi
