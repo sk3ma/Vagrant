@@ -29,8 +29,8 @@ install() {
     usermod -aG docker ${USER} && chmod a=rw /var/run/docker.sock
     echo -e "\e[32;1;3mInstalling Compose\e[m"
     curl -L https://github.com/docker/compose/releases/download/1.21.2/docker-compose-$(uname -s)-$(uname -m) -o /usr/local/bin/docker-compose
-    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
     chmod +x /usr/local/bin/docker-compose
+    ln -s /usr/local/bin/docker-compose /usr/bin/docker-compose
 }
 
 # Docker configuration.
