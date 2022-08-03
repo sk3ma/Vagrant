@@ -25,8 +25,8 @@ apache() {
     apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} vim -qy
     cd /var/www/html
     echo "<h1>Apache is operational</h1>" > index.html
-    systemctl start apache2
-    systemctl enable apache2
+    systemctl start apache2 && systemctl enable apache2
+    sed -ie 's/80/8080/g' /etc/apache2/ports.conf
 }
 
 # PHP installation.
@@ -47,8 +47,7 @@ mariadb() {
     bash mariadb_repo_setup --mariadb-server-version=10.6
     apt update
     apt install mariadb-server-10.6 mariadb-client-10.6 mariadb-common php7.4-mysql php7.4-imap -qy
-    systemctl start mariadb
-    systemctl enable mariadb
+    systemctl start mariadb && systemctl enable mariadb
     rm -f mariadb_repo_setup
 }
 
@@ -118,6 +117,7 @@ service() {
     cd /etc/apache2/sites-available
     a2dissite 000-default.conf
     a2ensite osticket.conf
+    sed -ie 's/80/8080/g' /etc/apache2/sites-enabled/osticket.conf
     systemctl restart apache2
 }
     
