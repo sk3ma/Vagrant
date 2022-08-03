@@ -34,7 +34,7 @@ STOP
         # Defining the network.
         d.vm.network "private_network", ip: "192.168.56.60"
         d.vm.network "forwarded_port", guest: 80, host: 8080
-    d.vm.network "forwarded_port", guest: 80, host: 9001
+        d.vm.network "forwarded_port", guest: 80, host: 9001
         # Preparing Dokuwiki installation.
         d.vm.provision "shell", inline: <<-SHELL
          tee /etc/hosts << STOP
