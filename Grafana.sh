@@ -8,7 +8,7 @@
 # Declaring variables.
 DISTRO=$(lsb_release -ds)
 USERID=$(id -u)
-IPADDR=192.168.33.55
+IPADDR=192.168.56.55
 
 # Sanity checking.
 if [[ ${USERID} -ne "0" ]]; then
