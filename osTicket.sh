@@ -79,7 +79,7 @@ database() {
     echo -e "\e[32;1;3mConfiguring MariaDB\e[m"
     local dbase=$(cat << STOP
 CREATE DATABASE osticket_db character set utf8 collate utf8_bin;
-CREATE USER 'osadmin'@'%' IDENTIFIED BY 'e3h6IFpp!';
+CREATE USER 'osadmin'@'%' IDENTIFIED BY 'uECcq2sq!';
 GRANT ALL PRIVILEGES ON osticket_db.* TO 'osadmin'@'%';
 STOP
 )
@@ -105,7 +105,7 @@ osticket() {
 # Firewall exception.
 firewall() {
     echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 80,443/tcp
+    ufw allow 80,443,8080/tcp
     ufw allow 3306/tcp
     echo "y" | ufw enable
     ufw reload
