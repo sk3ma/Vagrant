@@ -19,11 +19,11 @@ fi
 apache() {
     echo -e "\e[96;1;3mDistribution: ${DISTRO}\e[m"
     echo -e "\e[32;1;3mInstalling Apache\e[m"
-    apt update
-    apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} software-properties-common vim -qy
+    apt update && apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} software-properties-common vim -qy
     echo "<h1>Apache is operational</h1>" > /var/www/html/index.html
     systemctl start apache2
     systemctl enable --now apache2
+    sed -ie 's/80/8082/g' /etc/apache2/ports.conf
 }
 
 # PHP installation.
@@ -58,7 +58,7 @@ website() {
     echo -e "\e[32;1;3mCreating virtualhost\e[m"
     local vhost=$(cat << STOP
 <VirtualHost *:80>
-        ServerName wiki.locstat.co.za
+        ServerName wiki.mycompany.com
         DocumentRoot /var/www/html/dokuwiki
 
         <Directory ~ "/var/www/html/dokuwiki/(bin/|conf/|data/|inc/)">
@@ -80,6 +80,8 @@ STOP
     echo "${vhost}" > /etc/apache2/sites-available/dokuwiki.conf
     a2dissite 000-default.conf
     a2ensite dokuwiki.conf
+    sed -ie 's/80/8082/g' /etc/apache2/sites-enabled/dokuwiki.conf
+    systemctl reload apache2
 }
 
 # Sample page.
@@ -109,7 +111,6 @@ STOP
 # Certbot installation.
 cert() {
     echo -e "\e[32;1;3mInstalling Certbot\e[m"
-    systemctl reload apache2
     apt install certbot python3-certbot-apache -qy
     echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
     exit
