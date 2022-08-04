@@ -46,9 +46,9 @@ mariadb() {
     cd /opt
     curl -LsS -O https://downloads.mariadb.com/MariaDB/mariadb_repo_setup
     bash mariadb_repo_setup --mariadb-server-version=10.6
-    apt update
-    apt install mariadb-server-10.6 mariadb-client-10.6 mariadb-common php7.4-mysql php7.4-imap -qy
-    systemctl start mariadb && systemctl enable mariadb
+    apt update && apt install mariadb-server-10.6 mariadb-client-10.6 mariadb-common -qy
+    systemctl start mariadb
+    systemctl enable mariadb
     rm -f mariadb_repo_setup
 }
 
