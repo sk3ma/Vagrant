@@ -36,7 +36,7 @@ php() {
 # Creating exception.
 firewall() {
     echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 80/tcp
+    ufw allow 80,8080/tcp
     echo "y" | ufw enable
     ufw reload
 }
