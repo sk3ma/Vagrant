@@ -66,8 +66,6 @@ firewall() {
     ufw allow 9443/tcp
     echo "y" | ufw enable
     ufw reload
-    echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
-    exit
 }
 
 # Portainer agent.
@@ -86,6 +84,8 @@ agent() {
     --name=portainer_agent \
     portainer/agent:2.13.1
     docker container ls -a
+    echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
+    exit
 }
 
 # Calling functions.
