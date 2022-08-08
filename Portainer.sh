@@ -41,20 +41,21 @@ config() {
     echo -e "\e[32;1;3mCreating volume\e[m"
     docker volume create container
     echo -e "\e[32;1;3mStarting service\e[m"
-    systemctl start docker && systemctl enable docker
+    systemctl start docker
+    systemctl enable docker
 }
 
 # Portainer server.
 server() {
     echo -e "\e[32;1;3mDownloading Portainer\e[m"
-    docker pull portainer/portainer-ce:2.11.0
+    docker pull portainer/portainer-ce:latest
     docker run -d \
     -p 8000:8000 \
     -p 9443:9443 \
     --name=portainer \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v container:/data \
-    portainer/portainer-ce:2.11.0 \
+    portainer/portainer-ce:latest \
     --restart=unless-stopped
     docker start portainer
 }
@@ -71,6 +72,7 @@ firewall() {
 # Portainer agent.
 agent() {
     echo -e "\e[32;1;3mDownloading agent\e[m"
+    docker pull portainer/agent:latest
     docker run -d \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /var/lib/docker/volumes:/var/lib/docker/volumes \
@@ -82,7 +84,7 @@ agent() {
     -e EDGE_KEY=aHR0cDovLzE5Mi4xNjguNTYuNzQ6OTAwMHwxOTIuMTY4LjU2Ljc0OjgwMDB8MzU6NjA6Yjk6MTk6MjM6Njg6MjA6ODc6NzE6N2Y6MjM6OGE6NWE6YzM6NTc6YWZ8Mw \
     -e EDGE_INSECURE_POLL=1 \
     --name=portainer_agent \
-    portainer/agent:2.13.1
+    portainer/agent:latest
     docker container ls -a
     echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
     exit
