@@ -57,7 +57,6 @@ server() {
     portainer/portainer-ce:2.11.0 \
     --restart=unless-stopped
     docker start portainer
-    docker container ls
 }
 
 # Firewall creation.
@@ -86,6 +85,7 @@ agent() {
     -e EDGE_INSECURE_POLL=1 \
     --name=portainer_agent \
     portainer/agent:2.13.1
+    docker container ls -a
 }
 
 # Calling functions.
