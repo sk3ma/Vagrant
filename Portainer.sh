@@ -2,7 +2,7 @@
 
 ############################################################################
 # The purpose of the script is to automate a Docker installation on Ubuntu #
-# The script installs Docker, downloads Portainer and creates a container. #
+# The script installs Docker, Portainer server and creates the containers. #
 ############################################################################
 
 # Declaring variables.
@@ -47,14 +47,15 @@ config() {
 # Portainer server.
 server() {
     echo -e "\e[32;1;3mDownloading Portainer\e[m"
-    docker pull portainer/portainer
+    docker pull portainer/portainer-ce:2.11.0
     docker run -d \
+    -p 8000:8000 \
+    -p 9443:9443 \
     --name=portainer \
-    -p 9000:9000 \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v container:/data \
-    portainer/portainer \
-    --restart=always
+    portainer/portainer-ce:2.11.0 \
+    --restart=unless-stopped
     docker start portainer
     docker container ls
 }
@@ -62,7 +63,8 @@ server() {
 # Firewall creation.
 firewall() {
     echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 9000/tcp
+    ufw allow 8000/tcp
+    ufw allow 9443/tcp
     echo "y" | ufw enable
     ufw reload
     echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
