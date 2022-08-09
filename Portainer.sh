@@ -41,8 +41,16 @@ config() {
     echo -e "\e[32;1;3mCreating volume\e[m"
     docker volume create container
     echo -e "\e[32;1;3mStarting service\e[m"
-    systemctl start docker
-    systemctl enable docker
+    systemctl start docker && systemctl enable docker
+}
+
+# Firewall creation.
+firewall() {
+    echo -e "\e[32;1;3mAdjusting firewall\e[m"
+    ufw allow 8000/tcp
+    ufw allow 9443/tcp
+    echo "y" | ufw enable
+    ufw reload
 }
 
 # Portainer server.
@@ -58,15 +66,6 @@ server() {
     portainer/portainer-ce:latest \
     --restart=unless-stopped
     docker start portainer
-}
-
-# Firewall creation.
-firewall() {
-    echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 8000/tcp
-    ufw allow 9443/tcp
-    echo "y" | ufw enable
-    ufw reload
 }
 
 # Portainer agent.
@@ -95,7 +94,7 @@ if [[ -f /etc/lsb-release ]]; then
     echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
     install
     config
-    server
     firewall
+    server
     agent
 fi
