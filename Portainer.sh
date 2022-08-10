@@ -45,13 +45,13 @@ config() {
 }
 
 # Firewall creation.
-firewall() {
-    echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 8000/tcp
-    ufw allow 9443/tcp
-    echo "y" | ufw enable
-    ufw reload
-}
+#firewall() {
+#    echo -e "\e[32;1;3mAdjusting firewall\e[m"
+#    ufw allow 8000/tcp
+#    ufw allow 9443/tcp
+#    echo "y" | ufw enable
+#    ufw reload
+#}
 
 # Portainer server.
 server() {
@@ -94,7 +94,7 @@ if [[ -f /etc/lsb-release ]]; then
     echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
     install
     config
-    firewall
+#    firewall
     server
     agent
 fi
