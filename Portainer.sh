@@ -45,46 +45,36 @@ config() {
     systemctl start docker && systemctl enable docker
 }
 
-# Firewall creation.
-firewall() {
-    echo -e "\e[32;1;3mAdjusting firewall\e[m"
-    ufw allow 8000/tcp
-    ufw allow 9443/tcp
-    echo "y" | ufw enable
-    ufw reload
-}
-
 # Portainer server.
 server() {
     echo -e "\e[32;1;3mDownloading Portainer\e[m"
-    docker pull portainer/portainer-ce:latest
+    docker pull portainer/portainer-ce:2.14.2
     docker run -d \
     -p 8000:8000 \
     -p 9443:9443 \
     --name portainer \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /container:/data \
-    portainer/portainer-ce:latest \
+    portainer/portainer-ce:2.14.2 \
     --restart=always
-    docker start portainer
 }
 
 # Portainer agent.
 agent() {
     echo -e "\e[32;1;3mDownloading agent\e[m"
-    docker pull portainer/agent:latest
+    docker pull portainer/agent:2.14.2
     docker run -d \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /var/lib/docker/volumes:/var/lib/docker/volumes \
     -v /:/host \
-    -v /container:/data \
-    --restart=always \
+    -v container_data:/data \
+    --restart always \
     -e EDGE=1 \
-    -e EDGE_ID=f28a53ea-2fe3-4ddc-b30a-1687d9f12ae4 \
-    -e EDGE_KEY=aHR0cDovLzE5Mi4xNjguNTYuNzQ6OTAwMHwxOTIuMTY4LjU2Ljc0OjgwMDB8MzU6NjA6Yjk6MTk6MjM6Njg6MjA6ODc6NzE6N2Y6MjM6OGE6NWE6YzM6NTc6YWZ8Mw \
+    -e EDGE_ID=c0cd73db-b513-42af-b86f-f91d14fd4e6c \
+    -e EDGE_KEY=aHR0cHM6Ly8xOTIuMTY4LjU2Ljc1Ojk0NDN8MTkyLjE2OC41Ni43NTo4MDAwfDJhOmY0OmNjOjE0OjM4OjM0OmFlOmU2OjczOjRlOjE5OmU5OjlkOjkxOjVmOjY4fDM \
     -e EDGE_INSECURE_POLL=1 \
-    --name=portainer_agent \
-    portainer/agent:latest
+    --name portainer_edge_agent \
+    portainer/agent:2.14.2
     docker container ls -a
     echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
     exit
@@ -95,7 +85,6 @@ if [[ -f /etc/lsb-release ]]; then
     echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
     install
     config
-    firewall
     server
     agent
 fi
