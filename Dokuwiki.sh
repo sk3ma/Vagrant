@@ -102,10 +102,10 @@ page() {
     * **''Pages'' are created by ''editing non-existing'' pages, so after the ''id='' portion in the ''web browser'' you would provide a wiki ''page name''.**
     * **For ''security concerns'' Dokuwiki uses ''access control lists'' for ''authentication'' and only ''registered users'' are allowed ''access''.**
     * **''Dokuwiki'' also makes use of email ''two-factor authentication'' for ''additional security''.**
-    * **To ''search'' wiki pages click on ''Search'' and ''type something'', such as ''zabbix'' for instance.**
+    * **To ''search'' wiki pages click on ''Search'' and ''type something'', such as ''prometheus'' for instance.**
     * **To ''find'' a ''list'' of existing ''wiki pages'' click on ''Sitemap'', and for ''images'' click on ''Media Manager''.**
     * **To ''remove'' wiki pages simply ''delete'' the ''content'' from the ''wiki page''.**
-    * :!: **ADMIN:** For ''backup purposes'' the Dokuwiki ''working directory'' resides in the ''/var/www/html/dokuwiki/data'' directory.
+    * :!: **ADMIN:** For ''backup purposes'' the Dokuwiki ''working directory'' resides in the ''/var/www/html/dokuwiki/data'' path.
 
 ----
 STOP
