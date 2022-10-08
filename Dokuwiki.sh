@@ -90,7 +90,7 @@ STOP
 # Sample page.
 page() {
     echo -e "\e[32;1;3mCreating page\e[m"
-    tee /var/www/html/dokuwiki/data/pages/start.txt << STOP
+    tee /var/www/html/dokuwiki/data/pages/start.txt << STOP > /dev/null
 ----
 [[http://www.mycompany.com|{{ ::mycompany-1.png?400 |My Company}}]]
 
