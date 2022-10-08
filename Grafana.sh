@@ -22,7 +22,7 @@ config() {
     echo -e "\e[32;1;3mConfiguring Prometheus\e[m"
     mkdir -vp /opt/prometheus
     cd /opt/prometheus
-    tee prometheus.yml << STOP
+    tee prometheus.yml << STOP > /dev/null
 global:
   scrape_interval: 5s
   external_labels: 
