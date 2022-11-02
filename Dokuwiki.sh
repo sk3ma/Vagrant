@@ -50,7 +50,7 @@ wiki() {
     cd /opt
     mkdir -p /var/www/html/dokuwiki
     wget --progress=bar:force https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
-    tar xzf dokuwiki-stable.tgz -C /var/www/html/dokuwiki/ --strip-components=1
+    tar -xzf dokuwiki-stable.tgz -C /var/www/html/dokuwiki/ --strip-components=1
     cp /var/www/html/dokuwiki/.htaccess{.dist,}
     chown -R www-data:www-data /var/www/html/dokuwiki
     rm -f dokuwiki-stable.tgz
