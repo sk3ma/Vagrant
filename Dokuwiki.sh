@@ -93,7 +93,6 @@ page() {
     tee /var/www/html/dokuwiki/data/pages/start.txt << STOP > /dev/null
 ----
 [[http://www.mycompany.com|{{ ::mycompany-1.png?400 |My Company}}]]
-
 ====== Greetings citizen ======
 >> **''Welcome'' to the ''My Company'' wiki ''landing page''.**
 
