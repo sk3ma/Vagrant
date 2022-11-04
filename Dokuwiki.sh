@@ -23,7 +23,8 @@ apache() {
     echo "<h1>Apache is operational</h1>" > /var/www/html/index.html
     systemctl start apache2
     systemctl enable --now apache2
-    sed -ie 's/80/8082/g' /etc/apache2/ports.conf
+    echo -e "\e[32;1;3mUpdating port\e[m"
+    sed -ie 's|80|8082|g' /etc/apache2/ports.conf
 }
 
 # PHP installation.
@@ -50,7 +51,8 @@ wiki() {
     cd /opt
     mkdir -p /var/www/html/dokuwiki
     wget --progress=bar:force https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
-    tar -xzf dokuwiki-stable.tgz -C /var/www/html/dokuwiki/ --strip-components=1
+    echo -e "\e[32;1;3mUnpacking files\e[m"
+    tar -xvzf dokuwiki-stable.tgz -C /var/www/html/dokuwiki/ --strip-components=1
     cp /var/www/html/dokuwiki/.htaccess{.dist,}
     chown -R www-data:www-data /var/www/html/dokuwiki
     rm -f dokuwiki-stable.tgz
@@ -63,7 +65,6 @@ website() {
 <VirtualHost *:80>
         ServerName wiki.mycompany.com
         DocumentRoot /var/www/html/dokuwiki
-
         <Directory ~ "/var/www/html/dokuwiki/(bin/|conf/|data/|inc/)">
             <IfModule mod_authz_core.c>
                 AllowOverride All
@@ -74,16 +75,16 @@ website() {
                 Deny from all
             </IfModule>
         </Directory>
-
         ErrorLog /var/log/apache2/dokuwiki_error.log
         CustomLog /var/log/apache2/dokuwiki_access.log combined
 </VirtualHost>
 STOP
 )
     echo "${vhost}" > /etc/apache2/sites-available/dokuwiki.conf
+    echo -e "\e[32;1;3mEnabling configuration\e[m"
     a2dissite 000-default.conf
     a2ensite dokuwiki.conf
-    sed -ie 's/80/8082/g' /etc/apache2/sites-enabled/dokuwiki.conf
+    sed -ie 's|80|8082|g' /etc/apache2/sites-enabled/dokuwiki.conf
     systemctl reload apache2
 }
 
