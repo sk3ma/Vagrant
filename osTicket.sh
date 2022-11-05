@@ -85,7 +85,7 @@ GRANT ALL PRIVILEGES ON osticket_db.* TO 'osadmin'@'%';
 STOP
 )
     echo "${dbase}" > /var/www/osticket.sql
-    cat << STOP >/tmp/silent.txt
+    cat << STOP > /tmp/silent.txt
 echo | enter
 y
 y
