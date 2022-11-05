@@ -86,7 +86,7 @@ STOP
 )
     echo "${dbase}" > /var/www/osticket.sql
     cat << STOP > /tmp/silent.txt
-echo | enter
+echo | "enter"
 y
 y
 35mCb3dh
