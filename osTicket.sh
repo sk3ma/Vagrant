@@ -77,7 +77,7 @@ STOP
 
 # Database creation.
 database() {
-    echo -e "\e[32;1;3mConfiguring MariaDB\e[m"
+    echo -e "\e[32;1;3mCreating database\e[m"
     local dbase=$(cat << STOP
 CREATE DATABASE osticket_db character set utf8 collate utf8_bin;
 CREATE USER 'osadmin'@'%' IDENTIFIED BY 'uECcq2sq';
@@ -85,7 +85,8 @@ GRANT ALL PRIVILEGES ON osticket_db.* TO 'osadmin'@'%';
 STOP
 )
     echo "${dbase}" > /var/www/osticket.sql
-    cat << STOP > /tmp/silent.txt
+    echo -e "\e[32;1;3mConfiguring MariaDB\e[m"
+    cat << STOP > /tmp/keystroke.txt
 echo | "enter"
 y
 y
@@ -96,7 +97,9 @@ y
 y
 y
 STOP
-   mysql_secure_installation < /tmp/silent.txt
+   mysql_secure_installation < /tmp/keystroke.txt
+   echo -e "\e[32;1;3mImporting database\e[m"
+   mysql -u root -p35mCb3dh < /var/www/osticket.sql
 }
 
 # osTicket installation.
