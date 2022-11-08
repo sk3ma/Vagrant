@@ -1,9 +1,9 @@
 #!/usr/bin/env bash
 
-###############################################################################
-# The purpose of the script is to automate a LAMP installation on Ubuntu.     #      
-# The script installs LAMP, osTicket, and creates a database and virtualhost. #
-###############################################################################
+#################################################################################
+# The purpose of the script is to automate a LAMP installation on Ubuntu 20.04. #
+# The script installs LAMP, osTicket, and creates a database and virtualhost.   #
+#################################################################################
 
 # Declaring variables.
 DISTRO=$(lsb_release -ds)
@@ -26,7 +26,7 @@ apache() {
     cd /var/www/html
     echo "<h1>Apache is operational</h1>" > index.html
     systemctl start apache2 && systemctl enable apache2
-    sed -ie 's/80/8080/g' /etc/apache2/ports.conf
+    sed -ie 's|80|8080|g' /etc/apache2/ports.conf
 }
 
 # PHP installation.
@@ -66,7 +66,6 @@ config() {
           AllowOverride All
           Require all granted
      </Directory>
-
      ErrorLog ${APACHE_LOG_DIR}/osticket_error.log
      CustomLog ${APACHE_LOG_DIR}/osticket_access.log combined
 </VirtualHost>
@@ -107,15 +106,15 @@ osticket() {
     echo -e "\e[32;1;3mDownloading osTicket\e[m"
     apt install pv vim unzip -qy
     cd /opt
-    wget --progress=bar:force https://github.com/osTicket/osTicket/releases/download/v1.16.3/osTicket-v1.16.3.zip
+    wget --progress=bar:force https://github.com/osTicket/osTicket/releases/download/v1.17/osTicket-v1.17.zip
     echo -e "\e[32;1;3mUnpacking files\e[m"
-    unzip osTicket-v1.16.3.zip -d osTicket
+    unzip osTicket-v1.17.zip -d osTicket
     mv -v osTicket /var/www/
     echo -e "\e[32;1;3mConfiguring osTicket\e[m"
     cp -v /var/www/osTicket/upload/include/ost-sampleconfig.php /var/www/osTicket/upload/include/ost-config.php
     chown -vR www-data:www-data /var/www/
     chmod -vR 755 /var/www/osTicket
-    rm -f osTicket-v1.16.3.zip
+    rm -f osTicket-v1.17.zip
 }
 
 # Firewall exception.
@@ -133,7 +132,7 @@ service() {
     cd /etc/apache2/sites-available
     a2dissite 000-default.conf
     a2ensite osticket.conf
-    sed -ie 's/80/8080/g' /etc/apache2/sites-enabled/osticket.conf
+    sed -ie 's|80|8080|g' /etc/apache2/sites-enabled/osticket.conf
     systemctl restart apache2
 }
     
