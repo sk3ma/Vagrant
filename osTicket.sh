@@ -35,7 +35,7 @@ php() {
     add-apt-repository ppa:ondrej/php -y
     echo -e "\e[32;1;3mInstalling PHP\e[m"
     apt install php8.0 -qy
-    apt install php8.0-{common,imap,apcu,intl,cgi,mbstring,gd,bcmath,xml,zip} -qy
+    apt install php8.0-{common,imap,apcu,intl,cgi,mbstring,mysql,gd,bcmath,xml,zip} -qy
     echo "<?php phpinfo(); ?>" > /var/www/html/info.php
 }
 
