@@ -107,13 +107,17 @@ osticket() {
     apt install pv vim unzip -qy
     cd /opt
     wget --progress=bar:force https://github.com/osTicket/osTicket/releases/download/v1.17/osTicket-v1.17.zip
+    echo -e "\e[32;1;3mDownloading plugin\e[m"
+    wget --progress=bar:force https://github.com/sk3ma/Vagrant/blob/main/auth-oauth2.phar
     echo -e "\e[32;1;3mUnpacking files\e[m"
     unzip osTicket-v1.17.zip -d osTicket
     mv -v osTicket /var/www/
     echo -e "\e[32;1;3mConfiguring osTicket\e[m"
     cp -v /var/www/osTicket/upload/include/ost-sampleconfig.php /var/www/osTicket/upload/include/ost-config.php
     chown -vR www-data:www-data /var/www/
+    chown -vR www-data:www-data auth-oauth2.phar
     chmod -vR 755 /var/www/osTicket
+    mv -v auth-oauth2.phar /var/www/osTicket/upload/include/plugins/
     rm -f osTicket-v1.17.zip
 }
 
