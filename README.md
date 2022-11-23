@@ -1,2 +1,2 @@
 # vagrant
-Projects using Bash provisioning in Vagrant.
+Bash provisioning in Vagrant.
