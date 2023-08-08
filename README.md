@@ -1,2 +1,2 @@
-# vagrant
+# Vagrant
 Bash provisioning in Vagrant.
