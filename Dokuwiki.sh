@@ -11,32 +11,32 @@ DISTRO=$(lsb_release -ds)
 
 # Sanity checking.
 if [[ ${USERID} -ne "0" ]]; then
-    echo -e "\e[31;1;3mYou must be root, exiting.\e[m"
+    echo -e "\e[31;1;3m[✗] You must be root, exiting.\e[m"
     exit 1
 fi
 
 # Apache installation.
 apache() {
-    echo -e "\e[96;1;3mDistribution: ${DISTRO}\e[m"
-    echo -e "\e[32;1;3mInstalling Apache\e[m"
-    apt update && apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} software-properties-common vim -qy
+    echo -e "\e[96;1;3m[OK] Distribution: ${DISTRO}\e[m"
+    echo -e "\e[32;1;3m[INFO] Installing Apache\e[m"
+    apt update && apt install apache2 apache2-{doc,utils} openssl libssl-{dev,doc} software-properties-common -qy
     echo "<h1>Apache is operational</h1>" > /var/www/html/index.html
     systemctl start apache2
     systemctl enable --now apache2
-    echo -e "\e[32;1;3mUpdating port\e[m"
+    echo -e "\e[32;1;3m[INFO] Updating port\e[m"
     sed -ie 's|80|8082|g' /etc/apache2/ports.conf
 }
 
 # PHP installation.
 php() {
-    echo -e "\e[32;1;3mInstalling PHP\e[m"
+    echo -e "\e[32;1;3m[INFO] Installing PHP\e[m"
     apt install libapache2-mod-php7.4 php7.4 php7.4-{cli,curl,common,dev,fpm,gd,mbstring,xml} -qy
     echo "<?php phpinfo(); ?>" > /var/www/html/info.php
 }
 
 # Creating exception.
-firewall() {
-    echo -e "\e[32;1;3mAdjusting firewall\e[m"
+fire() {
+    echo -e "\e[32;1;3m[INFO] Adjusting firewall\e[m"
     ufw allow ssh
     ufw allow http
     ufw allow https
@@ -47,11 +47,11 @@ firewall() {
 
 # Downloading Dokuwiki.
 wiki() {
-    echo -e "\e[32;1;3mDownloading Dokuwiki\e[m"
+    echo -e "\e[32;1;3m[INFO] Downloading Dokuwiki\e[m"
     cd /opt
     mkdir -p /var/www/html/dokuwiki
     wget --progress=bar:force https://download.dokuwiki.org/src/dokuwiki/dokuwiki-stable.tgz
-    echo -e "\e[32;1;3mUnpacking files\e[m"
+    echo -e "\e[32;1;3m[INFO] Unpacking files\e[m"
     tar -xvzf dokuwiki-stable.tgz -C /var/www/html/dokuwiki/ --strip-components=1
     cp /var/www/html/dokuwiki/.htaccess{.dist,}
     chown -R www-data:www-data /var/www/html/dokuwiki
@@ -59,8 +59,8 @@ wiki() {
 }
 
 # Dokuwiki configuration.
-website() {
-    echo -e "\e[32;1;3mCreating virtualhost\e[m"
+site() {
+    echo -e "\e[32;1;3m[INFO] Creating virtualhost\e[m"
     local vhost=$(cat << STOP
 <VirtualHost *:80>
         ServerName wiki.mycompany.com
@@ -81,7 +81,7 @@ website() {
 STOP
 )
     echo "${vhost}" > /etc/apache2/sites-available/dokuwiki.conf
-    echo -e "\e[32;1;3mEnabling configuration\e[m"
+    echo -e "\e[32;1;3m[INFO] Enabling configuration\e[m"
     a2dissite 000-default.conf
     a2ensite dokuwiki.conf
     sed -ie 's|80|8082|g' /etc/apache2/sites-enabled/dokuwiki.conf
@@ -90,7 +90,7 @@ STOP
 
 # Sample page.
 page() {
-    echo -e "\e[32;1;3mCreating page\e[m"
+    echo -e "\e[32;1;3m[INFO] Creating page\e[m"
     tee /var/www/html/dokuwiki/data/pages/start.txt << STOP > /dev/null
 ----
 [[http://www.mycompany.com|{{ ::mycompany-1.png?400 |My Company}}]]
@@ -113,20 +113,25 @@ STOP
 
 # Certbot installation.
 cert() {
-    echo -e "\e[32;1;3mInstalling Certbot\e[m"
+    echo -e "\e[32;1;3m[INFO] Installing Certbot\e[m"
     apt install certbot python3-certbot-apache -qy
-    echo -e "\e[33;1;3;5mFinished, configure webUI.\e[m"
+    echo -e "\e[33;1;3;5m[✓] Finished, configure webUI.\e[m"
     exit
 }
 
-# Calling functions.
-if [[ -f /etc/lsb-release ]]; then
-    echo -e "\e[35;1;3;5mUbuntu detected, proceeding...\e[m"
+# Defining function.
+main() {
     apache
     php
-    firewall
+    firew
     wiki
-    website
+    site
     page
     cert
+}
+
+# Calling function.
+if [[ -f /etc/lsb-release ]]; then
+    echo -e "\e[35;1;3;5m[OK] Ubuntu detected, proceeding...\e[m"
+    main
 fi
