@@ -6,20 +6,18 @@
 ##############################################################################
 
 # Declaring variables.
-DISTRO=$(lsb_release -ds)
 USERID=$(id -u)
 IPADDR=192.168.56.55
 
 # Sanity checking.
 if [[ ${USERID} -ne "0" ]]; then
-    echo -e "\e[31;1;3mYou must be root, exiting.\e[m"
+    echo -e "\e[31;1;3m[✗] You must be root, exiting.\e[m"
     exit 1
 fi
 
 # Prometheus configuration.
 config() {
-    echo -e "\e[96;1;3mDistribution: ${DISTRO}\e[m"
-    echo -e "\e[32;1;3mConfiguring Prometheus\e[m"
+    echo -e "\e[32;1;3m[INFO] Configuring Prometheus\e[m"
     mkdir -vp /opt/prometheus
     cd /opt/prometheus
     tee prometheus.yml << STOP > /dev/null
@@ -44,7 +42,7 @@ STOP
 
 # Prometheus Docker.
 prom() {
-    echo -e "\e[32;1;3mCreating Prometheus\e[m"
+    echo -e "\e[32;1;3m[INFO] Container: Prometheus\e[m"
     docker pull prom/prometheus:latest
     docker run -d \
     --name prometheus \
@@ -54,7 +52,7 @@ prom() {
 
 # Node Exporter.
 node() {
-    echo -e "\e[32;1;3mCreating Node Exporter\e[m"
+    echo -e "\e[32;1;3m[INFO] Container: Node Exporter\e[m"
     docker pull quay.io/prometheus/node-exporter:latest
     docker run -d \
     --name node-exporter \
@@ -64,7 +62,7 @@ node() {
 
 # Grafana Docker.
 graf() {
-    echo -e "\e[32;1;3mCreating Grafana\e[m"
+    echo -e "\e[32;1;3m[INFO] Container: Grafana\e[m"
     docker pull grafana/grafana:latest
     docker run -d \
     --name grafana \
@@ -73,7 +71,7 @@ graf() {
 
 # Portainer agent.
 agent() {
-    echo -e "\e[32;1;3mDownloading agent\e[m"
+    echo -e "\e[32;1;3m[INFO] Downloading agent\e[m"
     docker pull portainer/portainer/agent:latest
     docker run -d  \
     -p ${IPADDR}:9001:9001 \
@@ -81,19 +79,24 @@ agent() {
     --restart=always \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /var/lib/docker/volumes:/var/lib/docker/volumes portainer/agent:latest
-    echo -e "\e[33;1;3mPortainer agent - http://${IPADDR}:9001/login\e[m"
-    echo -e "\e[33;1;3mPrometheus access - http://${IPADDR}:9090/targets\e[m"
-    echo -e "\e[33;1;3mNode Exporter - http://${IPADDR}:9100/metrics\e[m"
-    echo -e "\e[33;1;3mGrafana access - http://${IPADDR}:3000/login\e[m"
+    echo -e "\e[33;1;3m[INFO] Portainer agent - http://${IPADDR}:9001/login\e[m"
+    echo -e "\e[33;1;3mP[INFO] rometheus access - http://${IPADDR}:9090/targets\e[m"
+    echo -e "\e[33;1;3m[INFO] Node Exporter - http://${IPADDR}:9100/metrics\e[m"
+    echo -e "\e[33;1;3m[INFO] rafana access - http://${IPADDR}:3000/login\e[m"
     exit
 }
 
-# Calling functions.
-if [[ -f /etc/lsb-release ]]; then
-    echo -e "\e[33;1;3;5mUbuntu detected, proceeding...\e[m"
+# Defining function.
+main() {
     config
     prom
     node
     graf
     agent
+}
+
+# Calling function.
+if [[ -f /etc/lsb-release ]]; then
+    echo -e "\e[35;1;3;5m[OK] Ubuntu detected, proceeding...\e[m"
+    main
 fi
