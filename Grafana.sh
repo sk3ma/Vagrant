@@ -80,9 +80,9 @@ agent() {
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /var/lib/docker/volumes:/var/lib/docker/volumes portainer/agent:latest
     echo -e "\e[33;1;3m[INFO] Portainer agent - http://${IPADDR}:9001/login\e[m"
-    echo -e "\e[33;1;3mP[INFO] rometheus access - http://${IPADDR}:9090/targets\e[m"
-    echo -e "\e[33;1;3m[INFO] Node Exporter - http://${IPADDR}:9100/metrics\e[m"
-    echo -e "\e[33;1;3m[INFO] rafana access - http://${IPADDR}:3000/login\e[m"
+    echo -e "\e[33;1;3mP[INFO] Prometheus access - http://${IPADDR}:9090/targets\e[m"
+    echo -e "\e[33;1;3m[INFO] Node exporter - http://${IPADDR}:9100/metrics\e[m"
+    echo -e "\e[33;1;3m[INFO] Grafana access - http://${IPADDR}:3000/login\e[m"
     exit
 }
 
