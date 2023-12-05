@@ -64,14 +64,27 @@ service() {
 }
 
 # Firewall creation.
-firewall() {
+fwall() {
     echo -e "\e[32;1;3m[INFO] Adjusting firewall\e[m"
-    ufw allow 9000/tcp
+    ufw allow 80/tcp
+    ufw allow 8080,9000/tcp
     echo "y" | ufw enable
     ufw reload
 }
 
-# Downloading Portainer.
+# Nginx container.
+nginx() {
+    echo -e "\e[32;1;3m[INFO] Downloading Nginx\e[m"
+    docker pull nginx:latest
+    docker run -d                                   \
+    -p ${IPADDR}:80:80                              \
+    --name nginx                                    \
+    --restart=always                                \
+    -v /usr/share/nginx/html:/usr/share/nginx/html  \
+    nginx:latest
+}
+
+# Portainer container.
 portainer() {
     echo -e "\e[32;1;3m[INFO] Downloading Portainer\e[m"
     docker pull portainer/portainer-ce:latest
@@ -81,16 +94,32 @@ portainer() {
     --restart=always                             \
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /container:/data portainer/portainer-ce:latest
-    echo -e "\e[33;1;3;5m[✅] Finished, configure webUI.\e[m"
 }
-    
+
+# cAdvisor container.
+cadvisor() {
+    echo -e "\e[32;1;3m[INFO] Downloading cAdvisor\e[m"
+    docker pull gcr.io/cadvisor/cadvisor:latest
+    docker run -d                                \
+    -p ${IPADDR}:8080:8080                       \
+    --name cadvisor                              \
+    --restart=always                             \
+    -v /:/rootfs:ro                              \
+    -v /var/run:/var/run:rw                      \
+    -v /sys:/sys:ro                              \
+    -v /var/lib/docker/:/var/lib/docker:ro       \
+    gcr.io/cadvisor/cadvisor:latest
+    echo -e "\e[33;1;3;5m[INFO] Finished, Docker installed.\e[m"
+ 
 # Defining function.
 main() {
     install
     config
     service
-    firewall
+    fwall
+    nginx
     portainer
+    cadvisor
 }
 
 # Calling function.
