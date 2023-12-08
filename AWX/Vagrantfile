@@ -1,0 +1,62 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Defining Vagrant variables.
+VAG_CPU       = 3
+VAG_MEM       = 6144
+VAG_GUI       = false
+VAG_BOX       = "bento/ubuntu-22.04"
+VAG_NAME      = "awx.local"
+VAG_IP        = "192.168.56.74"
+VAG_SYNC_DIR = [{
+    local_path: '../../',
+    remote_path: '/opt/sandbox',
+    create: true,
+    owner: 'vagrant',
+    group: 'vagrant',
+    type: 'virtualbox',
+    mount_options: ['dmode=775,fmode=775']
+}].freeze
+
+# Defining Vagrant configuration.
+Vagrant.configure("2") do |config|
+  # Configuring hardware resources.
+  config.vm.provider "virtualbox" do |v|
+    v.memory = VAG_MEM
+    v.cpus   = VAG_CPU
+    v.gui    = VAG_GUI
+  end
+VAG_SYNC_DIR.each do |folder|
+  next unless File.directory?(File.expand_path(folder[:local_path]))
+  config.vm.synced_folder folder[:local_path],
+                          folder[:remote_path],
+                          create: folder[:create],
+                          group: folder[:group],
+                          mount_options: folder[:mount_options],
+                          owner: folder[:owner],
+                          type: folder[:type]
+  end
+  # Defining AWX server.
+    config.vm.define "awx" do |a|
+    a.vm.box              = VAG_BOX
+    a.vm.box_check_update = false
+    a.ssh.forward_agent   = true
+    a.vm.hostname         = VAG_NAME
+    # Defining the network.
+    a.vm.network "private_network", ip: VAG_IP
+    # Customizing Ubuntu environment.
+    a.vm.provision "shell", inline: <<-SHELL
+      echo -e "\e[32;1;3m[INFO] Updating system\e[m"
+      sudo apt update
+      echo -e "\e[32;1;3m[INFO] Installing Screenfetch\e[m"
+      sudo apt install screenfetch -y
+      echo '/usr/bin/screenfetch' >> /home/vagrant/.bashrc
+      sudo chmod a-x /etc/update-motd.d/00-header
+      sudo chmod a-x /etc/update-motd.d/99-bento
+      echo -e "\e[36;1;3m[OK] System online...\e[m"
+   SHELL
+      # Scripts to provision.
+      a.vm.provision "shell", path: "Docker.sh", privileged: true
+      a.vm.provision "shell", path: "Minikube.sh", privileged: false
+    end
+end
