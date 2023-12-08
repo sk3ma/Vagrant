@@ -24,9 +24,16 @@ install() {
 # Enabling service.
 service() {
     echo -e "\e[32;1;3m[INFO] Starting service\e[m"
+    echo "
+  ____             _             
+ |  _ \  ___   ___| | _____ _ __ 
+ | | | |/ _ \ / __| |/ / _ \ '__|
+ | |_| | (_) | (__|   <  __/ |   
+ |____/ \___/ \___|_|\_\___|_|  
+                                 "
     systemctl start docker
     systemctl enable docker
-    echo -e "\e[36;1;3;5m[INFO] Executing Minikube script...\e[m"
+    echo -e "\e[38;5;208;1;5m[INFO] Executing Minikube script...\e[m"
 }
 
 # Defining function.
