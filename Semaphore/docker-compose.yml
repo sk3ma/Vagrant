@@ -9,9 +9,9 @@ services:
       - semaphore-mysql:/var/lib/mysql
     environment:
       MYSQL_RANDOM_ROOT_PASSWORD: "yes"
-      MYSQL_DATABASE: semaphore
-      MYSQL_USER: semaphore
-      MYSQL_PASSWORD: semaphore
+      MYSQL_DATABASE: semaphore_db
+      MYSQL_USER: semaphore_user
+      MYSQL_PASSWORD: 1q2w3e4r5t
   semaphore:
     restart: unless-stopped
     ports:
@@ -19,10 +19,10 @@ services:
     image: semaphoreui/semaphore:latest
     environment:
       SEMAPHORE_ACCESS_KEY_ENCRYPTION: QfWtJhFYtIcAOFDbbZjpk9hFMobxY0WZf4o1PKnRQKI=
-      SEMAPHORE_ADMIN: admin
-      SEMAPHORE_ADMIN_EMAIL: admin@semaphore.local
-      SEMAPHORE_ADMIN_NAME: admin
-      SEMAPHORE_ADMIN_PASSWORD: mysupersecretpassword
+      SEMAPHORE_ADMIN: osadmin
+      SEMAPHORE_ADMIN_EMAIL: osadmin@semaphore.local
+      SEMAPHORE_ADMIN_NAME: osadmin
+      SEMAPHORE_ADMIN_PASSWORD: 65520e8c
       SEMAPHORE_DB: semaphore
       SEMAPHORE_DB_DIALECT: mysql
       SEMAPHORE_DB_HOST: mysql
