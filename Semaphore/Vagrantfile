@@ -1,0 +1,64 @@
+# -*- mode: ruby -*-
+# vi: set ft=ruby :
+
+# Defining Vagrant variables.
+VAG_CPU         = 2
+VAG_MEM         = 2048
+VAG_GUI         = false
+ANS_IP          = "192.168.56.70"
+VAG_SYNC_DIRS   = [{
+    local_path: '../../',
+    remote_path: '/srv/sysadm',
+    create: true,
+    owner: 'vagrant',
+    group: 'vagrant',
+    type: 'virtualbox',
+    mount_options: ['dmode=775,fmode=775']
+}].freeze
+
+# Defining Vagrant configuration.
+Vagrant.configure("2") do |config|
+  # Configuring hardware resources.
+  config.vm.provider "virtualbox" do |v|
+#    v.name   = "Ubuntu-20"
+    v.memory = VAG_MEM
+    v.cpus   = VAG_CPU
+    v.gui    = VAG_GUI
+  end
+VAG_SYNC_DIRS.each do |folder|
+  next unless File.directory?(File.expand_path(folder[:local_path]))
+  config.vm.synced_folder folder[:local_path],
+                          folder[:remote_path],
+                          create: folder[:create],
+                          group: folder[:group],
+                          mount_options: folder[:mount_options],
+                          owner: folder[:owner],
+                          type: folder[:type]
+  end
+  # Customizing Ubuntu server.
+    config.vm.define "ansible" do |s|
+    s.vm.box              = "bento/ubuntu-20.04"
+    s.vm.box_check_update = false
+    s.ssh.forward_agent   = true
+    s.vm.hostname         = "ansible"
+    # Defining the network.
+#    s.vm.network "private_network", type: "dhcp"
+    s.vm.network "private_network", ip: ANS_IP
+#    s.vm.network "forwarded_port", guest: 22, host: 2299, auto_correct: false, auto_correct_range: (2200..2299)
+#    s.vm.network "forwarded_port", guest: 80, host: 8080, auto_correct: true
+    # Preparing Ubuntu installation.
+    s.vm.provision "shell", inline: <<-SHELL
+      echo -e "\e[32;1;3m[INFO] Updating system\e[m"
+      sudo apt update
+      echo -e "\e[32;1;3m[INFO] Installing Screenfetch\e[m"
+      sudo apt install screenfetch tree -y
+      echo '/usr/bin/screenfetch' >> /home/vagrant/.bashrc
+      sudo chmod a-x /etc/update-motd.d/00-header
+      sudo chmod a-x /etc/update-motd.d/99-bento
+      echo "export PS1='\\[\e]0;\\u@\\h: \\w\\a\\]\${debian_chroot:+(\$debian_chroot)}\\[\\033[01;36m\\]\\u\\[\\033[00m\\]\\[\\033[01;37m\\]@\\[\\033[00m\\]\\[\\033[01;35m\\]\\h\\[\\033[00m\\]\\[\\033[01;37m\\]:\\[\\033[00;34m\\]\\w\\[\\033[00m\\]\\$ '" >> /home/vagrant/.bashrc
+      echo -e "\e[36;1;3;5m[OK] System online...\e[m"
+    SHELL
+    # Scripts to provision.
+#    s.vm.provision "shell", path: "Semaphore.sh", privileged: true
+    end
+end
