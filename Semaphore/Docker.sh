@@ -43,6 +43,12 @@ service() {
                                  "
     systemctl start docker
     systemctl enable docker
+}
+
+# Docker Compose.
+compose() {
+    echo -e "\e[32;1;3m[INFO] Executing file up\e[m"
+    docker-compose -f docker-compose.yml up -d
     echo -e "\e[33;1;3;5m[✅] Finished, Docker installed.\e[m"
 }
 
@@ -50,6 +56,7 @@ service() {
 main() {
     install
     service
+    compose
 }
 
 # Calling function.
